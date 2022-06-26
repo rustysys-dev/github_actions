@@ -1,6 +1,8 @@
 name: 'Setup GKE Connection'
 description: Authenticate GCP, Download Kubeconfig and Kubectl 
 author: Scott Mattan (Rusty)
+branding:
+  color: green
 
 inputs:
   project_id:
@@ -35,6 +37,6 @@ runs:
     - name: Setup Kubectl
       shell: bash
       run: |
+        echo "Getting Kubectl"
         KUSTOMIZE_URL=https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
         (cd ~/.local/bin/ && curl -s ${KUSTOMIZE_URL} | bash)
-        kubectl get pods
