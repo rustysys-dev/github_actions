@@ -1,0 +1,32 @@
+name: 'Query MySQL DB'
+description: Send query to connected MySQL DB
+author: Scott Mattan (Rusty)
+branding:
+  color: green
+
+inputs:
+  username:
+    description: user name
+    required: true
+  password:
+    description: user password
+    required: true
+  database:
+    description: database to connect to
+    required: true
+  query:
+    description: query to send
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Ensure MySQL Client
+      shell: bash
+      run: "apt-get install mysql-client"
+
+    # Assumes gke_setup has already been run
+    - name: Query
+      shell: bash
+      run: "mysql ${{ inputs.database }} -u ${{ inputs.username }} -p${{ inputs.password }} -h 127.0.0.1 -P 3306 <<<'${{ inputs.query }}'"
