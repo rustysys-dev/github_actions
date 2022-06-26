@@ -38,5 +38,6 @@ runs:
       shell: bash
       run: |
         echo "Getting Kubectl"
-        KUSTOMIZE_URL=https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
-        (cd ~/.local/bin/ && curl -s ${KUSTOMIZE_URL} | bash)
+        BIN_DIR=~/.local/bin/
+        KUBECTL_URL="https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        (mkdir -p $BIN_DIR && cd $BIN_DIR && curl -sLO ${KUBECTL_URL})
