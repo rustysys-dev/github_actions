@@ -1,0 +1,28 @@
+name: 'GKE Port Forward'
+description: Port forward a service from GKE 
+author: Scott Mattan (Rusty)
+branding:
+  color: green
+
+inputs:
+  namespace:
+    description: service namespace
+    required: true
+  service:
+    description: service name to connect to
+    required: true
+  local_port:
+    description: actions side port number
+    required: true
+  service_port:
+    description: service side port number
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    # Assumes gke_setup has already been run
+    - name: Port Forward
+      shell: bash
+      run: "kubectl port-forward -n ${{ inputs.namespace }} svc/${{ inputs.service }} ${{ inputs.local_port }}:${{ inputs.service_port }}"
