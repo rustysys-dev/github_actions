@@ -19,14 +19,5 @@ inputs:
     required: true
 
 runs:
-  using: "composite"
-  steps:
-
-    - name: Ensure MySQL Client
-      shell: bash
-      run: "apt-get install mysql-client"
-
-    # Assumes gke_setup has already been run
-    - name: Query
-      shell: bash
-      run: "mysql ${{ inputs.database }} -u ${{ inputs.username }} -p${{ inputs.password }} -h 127.0.0.1 -P 3306 <<<'${{ inputs.query }}'"
+  using: 'node16'
+  main: 'index.js'
