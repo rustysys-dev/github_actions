@@ -37,7 +37,6 @@ runs:
     - name: Setup Kubectl
       shell: bash
       run: |
-        echo "Getting Kubectl"
         BIN_DIR=~/.local/bin/
         KUBECTL_URL="https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
         (mkdir -p $BIN_DIR && cd $BIN_DIR && curl -sLO ${KUBECTL_URL})
