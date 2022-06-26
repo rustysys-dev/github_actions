@@ -1,0 +1,33 @@
+name: 'Setup Golang for Actions'
+description: Composite Golang and cache setup
+author: Scott Mattan (Rusty)
+branding:
+  color: green
+
+inputs:
+  go-version:
+    description: go version to setup
+    required: true
+  path:
+    description: paths to cache
+    required: true
+  key:
+    description: specific key from which to restore chached files
+    required: true
+  restore-keys:
+    description: key prefix used in file cache restoration
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - uses: actions/setup-go@v3
+      with:
+        go-version: ${{ inputs.go-version }}
+
+    - uses: actions/cache@v3
+      with:
+        path: ${{ inputs.path }}
+        key: ${{ inputs.key }}
+        restore-keys: ${{ inputs.restore-keys }}
