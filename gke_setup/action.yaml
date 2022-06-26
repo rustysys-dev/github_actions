@@ -1,6 +1,7 @@
-name: 'GKE Port Forward'
-description: Authenticate to GKE
+name: 'Setup GKE Connection'
+description: Authenticate GCP, Download Kubeconfig and Kubectl 
 author: Scott Mattan (Rusty)
+
 inputs:
   project_id:
     description: gcp project in which gke cluster resides
@@ -14,17 +15,26 @@ inputs:
   service_account:
     description: service account used to access gke
     required: true
+
 runs:
   using: "composite"
   steps:
-    - uses: 'google-github-actions/auth@v0'
+    
+    - name: Authenticate GCP
+      uses: 'google-github-actions/auth@v0'
       with:
-        credentials_json: ${{ secrets.service_account }}
-    - uses: 'google-github-actions/get-gke-credentials@v0'
+        credentials_json: ${{ inputs.service_account }}
+    
+    - name: Setup KubeConfig
+      uses: 'google-github-actions/get-gke-credentials@v0'
       with:
         cluster_name: ${{ inputs.cluster_name }}
         location: ${{ inputs.region }}
         project_id: ${{ inputs.project_id }}
-    - name: Test
-      run: 'kubectl get pods'
+    
+    - name: Setup Kubectl
       shell: bash
+      run: |
+        KUSTOMIZE_URL=https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh
+        (cd ~/.local/bin/ && curl -s ${KUSTOMIZE_URL} | bash)
+        kubectl get pods
