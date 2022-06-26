@@ -25,4 +25,4 @@ runs:
     # Assumes gke_setup has already been run
     - name: Port Forward
       shell: bash
-      run: "kubectl port-forward -n ${{ inputs.namespace }} svc/${{ inputs.service }} ${{ inputs.local_port }}:${{ inputs.service_port }}"
+      run: "kubectl port-forward -n ${{ inputs.namespace }} svc/${{ inputs.service }} ${{ inputs.local_port }}:${{ inputs.service_port }} &"
