@@ -17,6 +17,9 @@ inputs:
   service_account:
     description: service account used to access gke
     required: true
+  kubeconfig_dir:
+    description: directory in which to output kubeconfig
+    required: false
 
 runs:
   using: "composite"
@@ -27,12 +30,23 @@ runs:
       with:
         credentials_json: ${{ inputs.service_account }}
     
+    - name: Work Around Limitations of Next Action
+      shell: bash
+      run: |
+        GITHUB_WORKSPACE_BACKUP="${GITHUB_WORKSPACE}"
+        mkdir -p "${GITHUB_WORKSPACE}/tmp"
+        export GITHUB_WORKSPACE="${GITHUB_WORKSPACE}/tmp"
+    
     - name: Setup KubeConfig
       uses: 'google-github-actions/get-gke-credentials@v0'
       with:
         cluster_name: ${{ inputs.cluster_name }}
         location: ${{ inputs.region }}
         project_id: ${{ inputs.project_id }}
+
+    - name: Revert Work Around
+      shell: bash
+      run: export GITHUB_WORKSPACE="${GITHUB_WORKSPACE_BACKUP}"
     
     - name: Setup Kubectl
       shell: bash
