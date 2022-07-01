@@ -17,36 +17,28 @@ inputs:
   service_account:
     description: service account used to access gke
     required: true
-  kubeconfig_dir:
-    description: directory in which to output kubeconfig
-    required: false
 
 runs:
   using: "composite"
   steps:
-    
-    - name: Authenticate GCP
-      uses: 'google-github-actions/auth@v0'
-      with:
-        credentials_json: ${{ inputs.service_account }}
-    
-    - name: Work Around Limitations of Next Action
+    - name: Authenticate to GKE
       shell: bash
       run: |
-        GITHUB_WORKSPACE_BACKUP="${GITHUB_WORKSPACE}"
-        mkdir -p "${GITHUB_WORKSPACE}/tmp"
-        export GITHUB_WORKSPACE="${GITHUB_WORKSPACE}/tmp"
-    
-    - name: Setup KubeConfig
-      uses: 'google-github-actions/get-gke-credentials@v0'
-      with:
-        cluster_name: ${{ inputs.cluster_name }}
-        location: ${{ inputs.region }}
-        project_id: ${{ inputs.project_id }}
+        echo "###################"
+        echo "# BEGIN SETUP GCP #"
+        echo "###################"
 
-    - name: Revert Work Around
-      shell: bash
-      run: export GITHUB_WORKSPACE="${GITHUB_WORKSPACE_BACKUP}"
+        echo deb '[signed-by=/usr/share/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
+            >> /etc/apt/sources.list.d/gcloud.list
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg > /usr/share/keyrings/cloud.google.gpg
+        apt update && apt install google-cloud-sdk -y
+
+        mkdir -p ./tmp
+        echo "${{ inputs.service_account }}" > ./tmp/key.json
+        gcloud auth activate-service-account --key-file=./tmp/key.json
+        gcloud container clusters get-credentials "${{ inputs.cluster_name }}" \
+            --region="${{ inputs.region }}" \
+            --project="${{ inputs.project_id }}"
     
     - name: Setup Kubectl
       shell: bash
