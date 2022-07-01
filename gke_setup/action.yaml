@@ -21,21 +21,18 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Authenticate to GKE
+    
+    - name: Authenticate GCP
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: ${{ inputs.service_account }}
+    
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v0'
+
+    - name: Setup Kubeconfig
       shell: bash
       run: |
-        echo "###################"
-        echo "# BEGIN SETUP GCP #"
-        echo "###################"
-
-        sudo echo deb '[signed-by=/usr/share/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
-            >> /etc/apt/sources.list.d/gcloud.list
-        sudo curl https://packages.cloud.google.com/apt/doc/apt-key.gpg > /usr/share/keyrings/cloud.google.gpg
-        sudo apt update && apt install google-cloud-sdk -y
-
-        mkdir -p ./tmp
-        echo "${{ inputs.service_account }}" > ./tmp/key.json
-        gcloud auth activate-service-account --key-file=./tmp/key.json
         gcloud container clusters get-credentials "${{ inputs.cluster_name }}" \
             --region="${{ inputs.region }}" \
             --project="${{ inputs.project_id }}"
