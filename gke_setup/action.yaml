@@ -28,10 +28,10 @@ runs:
         echo "# BEGIN SETUP GCP #"
         echo "###################"
 
-        echo deb '[signed-by=/usr/share/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
+        sudo echo deb '[signed-by=/usr/share/keyrings/gcloud.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
             >> /etc/apt/sources.list.d/gcloud.list
-        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg > /usr/share/keyrings/cloud.google.gpg
-        apt update && apt install google-cloud-sdk -y
+        sudo curl https://packages.cloud.google.com/apt/doc/apt-key.gpg > /usr/share/keyrings/cloud.google.gpg
+        sudo apt update && apt install google-cloud-sdk -y
 
         mkdir -p ./tmp
         echo "${{ inputs.service_account }}" > ./tmp/key.json
